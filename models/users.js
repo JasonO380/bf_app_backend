@@ -6,6 +6,10 @@ const userSchema = new Schema ({
     email:{type: String, require: false},
     password:{type: String, require: true},
     programming: {type: mongoose.Schema.Types.ObjectId, ref: 'Programming'},
-    trainer: {type: mongoose.Schema.Types.ObjectId, ref: 'Trainer'},
-    workouts: {type: mongoose.Schema.Types.ObjectId, ref:'Workout'}
-})
+    trainer: {type: mongoose.Schema.Types.ObjectId, ref: 'Coach'},
+    workouts: {type: mongoose.Schema.Types.ObjectId, ref:'Workout'},
+    date: {type: Date, default: Date.now, required: true}
+});
+userSchema.index({ username: 'text' });
+
+module.exports = mongoose.model('User', userSchema);
