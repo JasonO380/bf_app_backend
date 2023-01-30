@@ -5,13 +5,18 @@ const mongoose = require('mongoose');
 const axios = require("axios");
 const workoutRoutes = require('./routes/movement-routes');
 const cardioRoutes = require('./routes/cardio-routes');
+const userRoutes = require('./routes/user-routes')
 const programmingRoutes = require('./routes/programming-routes');
+const coachRoutes = require('./routes/trainer-routes');
+const sessionRoutes = require('./routes/session-routes')
 const Cardio = require('./models/cardio');
 app.use(bodyparser.json());
 
-// app.use('/api/users',);
+app.use('/api/users', userRoutes);
 
-// app.use('/api/coach',);
+app.use('/api/coach', coachRoutes);
+
+app.use('/api/session', sessionRoutes);
 
 app.use('/api/workouts',workoutRoutes);
 

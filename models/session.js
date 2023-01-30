@@ -1,19 +1,18 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const sessionSchema = new Schema ({
-    exercise:{type: String, require: true, unique: false},
-    conditioning: {type: String, require: true, unique: false},
-    date: {type: Date, default: Date.now, required: true},
-    session: [{
-        reps: {type: Number, require: false},
-        rounds: {type: Number, require: false},
-        weight: {type: Number, require: false},
-        distance:{type: String, require: false},
-        time:{type: String, require: false},
-    }],
-    athlete: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    trainer: {type: mongoose.Schema.Types.ObjectId, ref: 'Coach'}
+const sessionSchema = new Schema({
+    exercise: { type: String, require: true, unique: false },
+    conditioning: { type: String, require: true, unique: false },
+    date: { type: Date, default: Date.now, required: true },
+    reps: { type: Number, require: false },
+    rounds: { type: Number, require: false },
+    weight: { type: Number, require: false },
+    distance: { type: String, require: false },
+    time: { type: String, require: false },
+    athlete: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    trainer: { type: mongoose.Schema.Types.ObjectId, ref: "Coach" },
+    programming: [{ type: mongoose.Schema.Types.ObjectId, ref: "Programming" }]
 });
 
-module.exports = mongoose.model('Session', sessionSchema);
+module.exports = mongoose.model("Session", sessionSchema);
