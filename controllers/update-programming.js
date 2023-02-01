@@ -2,6 +2,7 @@ const HttpError = require("../models/http-error");
 const mongoose = require("mongoose");
 const { validationResult } = require("express-validator");
 const Programming = require("../models/programming");
+const WeekDays = require("../models/week-days");
 const Session = require("../models/session");
 
 const updateProgramming = async (req, res, next) => {
@@ -33,67 +34,50 @@ const updateProgramming = async (req, res, next) => {
     program.cycleName = req.body.cycleName;
     program.athlete = req.body.athlete;
 
-    // Find the index of the week
-    const weekIndex = program.weeks.findIndex(
-        (week) => week.weekNumber === req.body.week
-    );
-    if (weekIndex >= 0) {
-        // Find the index of the day
-        const dayIndex = program.weeks[weekIndex].days.findIndex(
-            (day) => day.dayNumber === req.body.day
-        );
-        if (dayIndex >= 0) {
-            // Add the session to the existing day
-            program.weeks[weekIndex].days[dayIndex].session.push({
-                exercise: req.body.exercise,
-                conditioning: req.body.conditioning,
-                date: req.body.date,
-                reps: req.body.reps,
-                rounds: req.body.rounds,
-                weight: req.body.weight,
-                distance: req.body.distance,
-                time: req.body.time,
-            });
-        } else {
-            // Add the day and session if it doesn't exist
-            program.weeks[weekIndex].days.push({
-                dayNumber: req.body.day,
-                session: [
-                    {
-                        exercise: req.body.exercise,
-                        conditioning: req.body.conditioning,
-                        date: req.body.date,
-                        reps: req.body.reps,
-                        rounds: req.body.rounds,
-                        weight: req.body.weight,
-                        distance: req.body.distance,
-                        time: req.body.time,
-                    },
-                ],
-            });
+    let weekDays = req.body.weeks;
+    let sessions = req.body.workouts;
+
+    if (weekDays) {
+        for (const weekDay of weekDays) {
+            let existingWeekDay = await WeekDays.findOne({ _id: weekDay._id });
+
+            if (existingWeekDay) {
+                for (const session of weekDay.workouts) {
+                    let existingSession = await Session.findOne({
+                        _id: session._id,
+                    });
+                    if (!existingSession) {
+                        let newSession = new Session(session);
+                        await newSession.save();
+                        await WeekDays.findByIdAndUpdate(existingWeekDay._id , {
+                            $push: { session: newSession._id },
+                        })
+                        await existingWeekDay.save();
+                        await Programming.findByIdAndUpdate(programID, {
+                            $push: { session: newSession._id },
+                        });
+                    }
+                }
+            } else {
+                let newWeekDay = new WeekDays(weekDay);
+                await newWeekDay.save();
+                await Programming.findByIdAndUpdate(programID, {
+                    $push: { weeks: newWeekDay._id },
+                });
+                for (const session of weekDay.workouts) {
+                    let newSession = new Session(session);
+                    newSession.weekDays = newWeekDay._id;
+                    await newSession.save();
+                    await WeekDays.findByIdAndUpdate(newWeekDay._id , {
+                        $push: { session: newSession._id },
+                    })
+                    await newWeekDay.save();
+                    await Programming.findByIdAndUpdate(programID, {
+                        $push: { session: newSession._id },
+                    });
+                }
+            }
         }
-    } else {
-        // Add the week, day, and session if it doesn't exist
-        program.weeks.push({
-            weekNumber: req.body.week,
-            days: [
-                {
-                    dayNumber: req.body.day,
-                    session: [
-                        {
-                            exercise: req.body.exercise,
-                            conditioning: req.body.conditioning,
-                            date: req.body.date,
-                            reps: req.body.reps,
-                            rounds: req.body.rounds,
-                            weight: req.body.weight,
-                            distance: req.body.distance,
-                            time: req.body.time,
-                        },
-                    ],
-                },
-            ],
-        });
     }
 
     try {
@@ -111,8 +95,7 @@ const updateProgramming = async (req, res, next) => {
 
 exports.updateProgramming = updateProgramming;
 
-
-//front end possibility for grid layout when entering programming 
+//front end possibility for grid layout when entering programming
 // import ReactGridLayout from 'react-grid-layout';
 
 // const CreateProgramming = () => {

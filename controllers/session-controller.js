@@ -64,9 +64,6 @@ const createSession = async (req, res, next) => {
 
     try {
         await session.save();
-        // res.status(201).json({
-        //     session: session.toObject({ getters: true }),
-        // });
     } catch (err) {
         console.log(err);
         return next(new HttpError("Failed to add session", 500));

@@ -12,7 +12,8 @@ const sessionSchema = new Schema({
     time: { type: String, require: false },
     athlete: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     trainer: { type: mongoose.Schema.Types.ObjectId, ref: "Coach" },
-    programming: [{ type: mongoose.Schema.Types.ObjectId, ref: "Programming" }]
+    programming: [{ type: mongoose.Schema.Types.ObjectId, ref: "Programming" }],
+    weekDays: [{ type: mongoose.Schema.Types.ObjectId, ref: "WeekDay" }]
 });
 
 module.exports = mongoose.model("Session", sessionSchema);

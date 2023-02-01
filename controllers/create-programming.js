@@ -65,6 +65,7 @@ const createProgramming = async (req, res, next) => {
             week.workouts.map(async(sess) => {
                 const activities = new Session(sess);
                 activities.programming = programming._id;
+                activities.weekDays = days._id
                 session.push(activities);
                 days.session = activities._id
             });

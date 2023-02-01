@@ -119,45 +119,6 @@ const updateProgramming = async (req, res, next) => {
     program.cycleName = req.body.cycleName;
     program.athlete = req.body.athlete;
 
-    // Find the index of the week
-    const weekIndex = program.weeks.findIndex(
-        (week) => week.weekNumber === req.body.week
-    );
-    if (weekIndex >= 0) {
-        // Find the index of the day
-        const dayIndex = program.weeks[weekIndex].days.findIndex(
-            (day) => day.dayNumber === req.body.day
-        );
-        if (dayIndex >= 0) {
-            // Add the session to the existing day
-            program.weeks[weekIndex].days[dayIndex].session.push({
-                exercise: req.body.exercise,
-                conditioning: req.body.conditioning,
-                date: req.body.date,
-                reps: req.body.reps,
-                rounds: req.body.rounds,
-                weight: req.body.weight,
-                distance: req.body.distance,
-                time: req.body.time,
-            });
-        } else {
-            // Add the day and session if it doesn't exist
-            program.weeks[weekIndex].days.push({
-                dayNumber: req.body.day,
-            });
-        }
-    } else {
-        // Add the week, day, and session if it doesn't exist
-        program.weeks.push({
-            weekNumber: req.body.week,
-            days: [
-                {
-                    dayNumber: req.body.day,
-                },
-            ],
-        });
-    }
-
     try {
         await program.save();
     } catch (err) {
@@ -179,7 +140,7 @@ const deleteProgramming = async (req, res, next) => {
         // Find the program
         program = await Programming.findById(programID);
         //Delete all weekDays related to program
-        await WeekDays.deleteMany({programming: programID})
+        await WeekDays.deleteMany({ programming: programID });
         // Delete all sessions related to the program
         await Session.deleteMany({ programming: programID });
         // Delete the program
