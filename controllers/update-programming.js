@@ -67,10 +67,10 @@ const updateProgramming = async (req, res, next) => {
                 for (const session of weekDay.workouts) {
                     let newSession = new Session(session);
                     newSession.weekDays = newWeekDay._id;
+                    newSession.programming = programID;
                     await newSession.save();
-                    await WeekDays.findByIdAndUpdate(newWeekDay._id , {
-                        $push: { session: newSession._id },
-                    })
+                    newWeekDay.programming = programID;
+                    newWeekDay.session = newSession._id;
                     await newWeekDay.save();
                     await Programming.findByIdAndUpdate(programID, {
                         $push: { session: newSession._id },
@@ -115,3 +115,53 @@ exports.updateProgramming = updateProgramming;
 // }
 
 // export default CreateProgramming;
+
+// {
+//     "cycleName": "Update",
+//     "weeks":[
+//         {
+//             "weekNumber":3,
+//             "day":"1",
+//             "workouts": [
+//         {
+//             "exercise": "Clean and jerk",
+//             "rounds":6,
+//             "weight": 125,
+//             "reps": 1
+//         },
+//         {
+//             "exercise": "Clean grip deadlift",
+//             "rounds":6,
+//             "weight": 155,
+//             "reps": 3
+//         }
+//     ]
+//         },
+//         {
+//             "weekNumber":"4",
+//             "day":"1",
+//             "workouts": [
+//                 {
+//                     "exercise":"Snatch with pause at knee + Snatch",
+//                     "weight":85,
+//                     "rounds": 8,
+//                     "reps": 2
+//                 },
+//                 {
+//                     "exercise":"Snatch pulls",
+//                     "weight":115,
+//                     "rounds":5,
+//                     "reps":3
+//                 },
+//                 {
+//                     "exercise":"SOTS press",
+//                     "weight":50,
+//                     "rounds":5,
+//                     "reps":3
+//                 }
+//             ]
+//         }
+//     ],
+//     "athlete": "63d0787e567642846f5d2876",
+//     "trainer": "63d08898e0055975dd9d036b"
+// }

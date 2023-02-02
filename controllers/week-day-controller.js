@@ -47,33 +47,6 @@ const addSessionToWeekDay = async (req, res, next) => {
         );
     }
 
-    // let program;
-    // try {
-    //     program = await Programming.findOne({ weeks: weekDayID }, (err, program) => {
-    //         if (err) {
-    //             return next(
-    //                 new HttpError(
-    //                     "Error finding program, please try again later",
-    //                     500
-    //                 )
-    //             );
-    //         }
-
-    //         if (!program) {
-    //             return next(new HttpError("Program not found", 404));
-    //         }
-
-    //         console.log(program._id);
-    //     });
-    //     Session.findByIdAndUpdate(newSession._id, {
-    //         $push: { program: program._id },
-    //     })
-    // } catch (err) {
-    //     return next(
-    //         new HttpError("Can not find program please try again later", 500)
-    //     );
-    // }
-
     let newSession;
     let program;
     try {
@@ -101,17 +74,6 @@ const addSessionToWeekDay = async (req, res, next) => {
     res.status(200).json({
         session: newSession.toObject({ getters: true }),
     });
-};
-
-const deleteSessionFromWeekDay = (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return next(
-            new HttpError("Invalid inputs passed, please check your data.", 422)
-        );
-    }
-    const { weeks, weekNumber, day, session } = req.body;
-    const weekDayID = req.params.wid;
 };
 
 exports.updateWeekDay = updateWeekDay;

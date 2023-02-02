@@ -50,7 +50,7 @@ const createSession = async (req, res, next) => {
 
     const session = new Session({
         exercise,
-        conditioning: cardio,
+        conditioning,
         date: new Date(),
         reps,
         rounds,
@@ -59,7 +59,6 @@ const createSession = async (req, res, next) => {
         time,
         athlete,
         programming,
-        movement: movement,
     });
 
     try {
@@ -150,25 +149,6 @@ const updateSession = async (req, res, next) => {
 
 const deleteSession = async (req, res, next) => {
     const sessionID = req.params.sid;
-    const userID = req.body.athlete;
-
-    let deleteUserSession;
-    try {
-        deleteUserSession = await User.findByIdAndUpdate(
-            userID,
-            { workouts: sessionID },
-            { $pull: { workouts: sessionID } },
-            { new: true }
-        );
-    } catch (err) {
-        return next(new HttpError("Could not delete user session", 500));
-    }
-
-    if (!deleteUserSession.nModified) {
-        return next(
-            new HttpError("Could not find user session for this id", 404)
-        );
-    }
 
     let deleteSession;
     try {
