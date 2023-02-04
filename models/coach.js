@@ -7,7 +7,7 @@ const coachSchema = new Schema ({
     password:{type: String, require: true},
     programming: [{type: mongoose.Schema.Types.ObjectId, ref: 'Programming'}],
     athlete: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
-    client:[{type: String, require: false}]
+    client:[{type: mongoose.Schema.Types.ObjectId, ref: 'Client'}],
 });
 coachSchema.index({ coachName: 'text' });
 

@@ -4,16 +4,19 @@ const { validationResult } = require("express-validator");
 const Session = require("../models/session");
 const User = require("../models/user");
 const Movement = require("../models/movement");
+const Client = require('../models/client');
 const { findOne } = require("../models/movement");
 
 const createSession = async (req, res, next) => {
     const {
         exercise,
+        client,
         cardio,
         distance,
         time,
         weight,
         reps,
+        workouts,
         rounds,
         athlete,
         programming,
@@ -50,13 +53,13 @@ const createSession = async (req, res, next) => {
 
     const session = new Session({
         exercise,
-        conditioning,
         date: new Date(),
         reps,
         rounds,
         weight,
         distance,
         time,
+        client,
         athlete,
         programming,
     });
@@ -70,21 +73,41 @@ const createSession = async (req, res, next) => {
 
     const athleteID = req.body.athlete;
     const sessionID = session.id;
-
-    try {
-        const user = await User.findByIdAndUpdate(athleteID, {
-            $push: { workouts: sessionID },
-        });
-        if (!user) {
-            return next(new HttpError("User not found", 404));
+    const clientID = client;
+    if(athleteID) {
+        try {
+            const user = await User.findByIdAndUpdate(athleteID, {
+                $push: { workouts: sessionID },
+            });
+            if (!user) {
+                return next(new HttpError("User not found", 404));
+            }
+            res.status(200).json({
+                message: "Workout added to user's workouts",
+                user: user.toObject({ getters: true }),
+                session: session.toObject({ getters: true }),
+            });
+        } catch (err) {
+            return next(new HttpError("Failed to add workout to user", 500));
         }
-        res.status(200).json({
-            message: "Workout added to user's workouts",
-            user: user.toObject({ getters: true }),
-            session: session.toObject({ getters: true }),
-        });
-    } catch (err) {
-        return next(new HttpError("Failed to add workout to user", 500));
+    }
+    
+    if (clientID) {
+        try {
+            const client = await Client.findByIdAndUpdate(clientID, {
+                $push: {session: sessionID}
+            })
+            if (!client) {
+                return next(new HttpError("Client not found", 404));
+            }
+            res.status(200).json({
+                message: "Workout added to user's workouts",
+                client: client.toObject({ getters: true }),
+                session: session.toObject({ getters: true }),
+            });
+        } catch (err) {
+            return next (new HttpError('Failed to add session to client', 500))
+        }
     }
 };
 

@@ -69,7 +69,7 @@ const searchMovements = async (req, res, next) => {
     }
 
     if (!movements || movements.length === 0) {
-        return next(new HttpError('No workouts found for the given search query', 404));
+        return next(new HttpError('No movements found for the given search query', 404));
     }
 
     res.json({ movements: movements.map(movement => movement.toObject({ getters: true })) });

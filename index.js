@@ -10,6 +10,7 @@ const programmingRoutes = require('./routes/programming-routes');
 const coachRoutes = require('./routes/trainer-routes');
 const sessionRoutes = require('./routes/session-routes');
 const weekDayRoutes = require('./routes/week-day-routes');
+const clientRoutes = require('./routes/client-routes');
 const Cardio = require('./models/cardio');
 app.use(bodyparser.json());
 
@@ -26,6 +27,8 @@ app.use('/api/cardio',cardioRoutes);
 app.use('/api/programming', programmingRoutes);
 
 app.use('/api/week', weekDayRoutes);
+
+app.use('/api/client', clientRoutes);
 
 
 const mongo =

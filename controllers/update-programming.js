@@ -72,9 +72,10 @@ const updateProgramming = async (req, res, next) => {
                     newWeekDay.programming = programID;
                     newWeekDay.session = newSession._id;
                     await newWeekDay.save();
-                    await Programming.findByIdAndUpdate(programID, {
-                        $push: { session: newSession._id },
-                    });
+                    //don't think this is necessary leave it here just in case
+                    // await Programming.findByIdAndUpdate(programID, {
+                    //     $push: { session: newSession._id },
+                    // });
                 }
             }
         }
