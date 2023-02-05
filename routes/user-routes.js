@@ -12,19 +12,17 @@ router.get("/session/:uid", sessionControllers.getUserSessions);
 router.post(
     "/signup",
     [
-        check('username').not().isEmpty(),
-        check('email').normalizeEmail().isEmail(),
-        check('password').isLength({min: 6})
+        check("username").not().isEmpty(),
+        check("email").normalizeEmail().isEmail(),
+        check("password").isLength({ min: 6 }),
     ],
     userControllers.createUser
 );
 
-router.post("/session", sessionControllers.createUserSession);
+router.post("/:uid", sessionControllers.createUserSession);
 
 router.post("/login", userControllers.loginUser);
 
-router.patch("/session-update/:sid", sessionControllers.updateUserSession);
-
-router.delete("/session/:sid", sessionControllers.deleteUserSession);
+router.delete("/:uid", sessionControllers.deleteUserSession);
 
 module.exports = router;

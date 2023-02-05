@@ -1,35 +1,34 @@
 const express = require("express");
 const bodyparser = require("body-parser");
 const app = express();
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const axios = require("axios");
-const workoutRoutes = require('./routes/movement-routes');
-const cardioRoutes = require('./routes/cardio-routes');
-const userRoutes = require('./routes/user-routes')
-const programmingRoutes = require('./routes/programming-routes');
-const coachRoutes = require('./routes/trainer-routes');
-const sessionRoutes = require('./routes/session-routes');
-const weekDayRoutes = require('./routes/week-day-routes');
-const clientRoutes = require('./routes/client-routes');
-const Cardio = require('./models/cardio');
+const workoutRoutes = require("./routes/movement-routes");
+const cardioRoutes = require("./routes/cardio-routes");
+const userRoutes = require("./routes/user-routes");
+const programmingRoutes = require("./routes/programming-routes");
+const coachRoutes = require("./routes/trainer-routes");
+const sessionRoutes = require("./routes/session-routes");
+const weekDayRoutes = require("./routes/week-day-routes");
+const clientRoutes = require("./routes/client-routes");
+const Cardio = require("./models/cardio");
 app.use(bodyparser.json());
 
-app.use('/api/users', userRoutes);
+app.use("/api/users", userRoutes);
 
-app.use('/api/coach', coachRoutes);
+app.use("/api/coach", coachRoutes);
 
-app.use('/api/session', sessionRoutes);
+app.use("/api/session", sessionRoutes);
 
-app.use('/api/workouts',workoutRoutes);
+app.use("/api/workouts", workoutRoutes);
 
-app.use('/api/cardio',cardioRoutes);
+app.use("/api/cardio", cardioRoutes);
 
-app.use('/api/programming', programmingRoutes);
+app.use("/api/programming", programmingRoutes);
 
-app.use('/api/week', weekDayRoutes);
+app.use("/api/week", weekDayRoutes);
 
-app.use('/api/client', clientRoutes);
-
+app.use("/api/client", clientRoutes);
 
 const mongo =
     "mongodb+srv://JMO380:nosaj380!@barbellapp.wp1vz99.mongodb.net/?retryWrites=true&w=majority";

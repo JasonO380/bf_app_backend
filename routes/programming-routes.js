@@ -24,6 +24,6 @@ router.patch(
     update.updateProgramming
 );
 
-router.delete("/:pid", programmingControllers.deleteProgramming)
+router.delete("/:pid", programmingControllers.deleteProgramming);
 
 module.exports = router;

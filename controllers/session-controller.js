@@ -4,7 +4,7 @@ const { validationResult } = require("express-validator");
 const Session = require("../models/session");
 const User = require("../models/user");
 const Movement = require("../models/movement");
-const Client = require('../models/client');
+const Client = require("../models/client");
 const { findOne } = require("../models/movement");
 
 const createSession = async (req, res, next) => {
@@ -74,7 +74,7 @@ const createSession = async (req, res, next) => {
     const athleteID = req.body.athlete;
     const sessionID = session.id;
     const clientID = client;
-    if(athleteID) {
+    if (athleteID) {
         try {
             const user = await User.findByIdAndUpdate(athleteID, {
                 $push: { workouts: sessionID },
@@ -91,12 +91,12 @@ const createSession = async (req, res, next) => {
             return next(new HttpError("Failed to add workout to user", 500));
         }
     }
-    
+
     if (clientID) {
         try {
             const client = await Client.findByIdAndUpdate(clientID, {
-                $push: {session: sessionID}
-            })
+                $push: { session: sessionID },
+            });
             if (!client) {
                 return next(new HttpError("Client not found", 404));
             }
@@ -106,7 +106,7 @@ const createSession = async (req, res, next) => {
                 session: session.toObject({ getters: true }),
             });
         } catch (err) {
-            return next (new HttpError('Failed to add session to client', 500))
+            return next(new HttpError("Failed to add session to client", 500));
         }
     }
 };
@@ -129,6 +129,20 @@ const getSessionByID = async (req, res, next) => {
 
 const updateSession = async (req, res, next) => {
     const sessionID = req.params.sid;
+    const { exercise } = req.body;
+
+    let movementExists;
+    let movement;
+    try {
+        movementExists = await Movement.findOne({ movement: exercise });
+        if (!movementExists) {
+            movement = new Movement({ movement: exercise });
+            await movement.save();
+        }
+    } catch (err) {
+        console.log(err);
+        // return next(new HttpError("Failed to find movement", 500));
+    }
 
     let updateSession;
     try {

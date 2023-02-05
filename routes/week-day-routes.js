@@ -4,6 +4,6 @@ const { check } = require("express-validator");
 // const checkAuth = require('../middleware/check-auth');
 const router = express.Router();
 
-router.patch("/:wid", weekDayControllers.addSessionToWeekDay)
+router.patch("/:wid", weekDayControllers.addSessionToWeekDay);
 
 module.exports = router;

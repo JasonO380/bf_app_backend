@@ -49,9 +49,9 @@ const updateProgramming = async (req, res, next) => {
                     if (!existingSession) {
                         let newSession = new Session(session);
                         await newSession.save();
-                        await WeekDays.findByIdAndUpdate(existingWeekDay._id , {
+                        await WeekDays.findByIdAndUpdate(existingWeekDay._id, {
                             $push: { session: newSession._id },
-                        })
+                        });
                         await existingWeekDay.save();
                         await Programming.findByIdAndUpdate(programID, {
                             $push: { session: newSession._id },

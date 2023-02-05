@@ -52,7 +52,7 @@ const addSessionToWeekDay = async (req, res, next) => {
     try {
         newSession = new Session(session);
         newSession.weekDays = weekDayID;
-        program = await Programming.findOne({ weeks: weekDayID })
+        program = await Programming.findOne({ weeks: weekDayID });
         newSession.programming = program._id;
         await newSession.save();
     } catch (err) {

@@ -7,18 +7,7 @@ const userSchema = new Schema({
     password: { type: String, require: true },
     programming: [{ type: mongoose.Schema.Types.ObjectId, ref: "Programming" }],
     trainer: [{ type: mongoose.Schema.Types.ObjectId, ref: "Coach" }],
-    session: [
-        {
-            exercise: { type: String, require: true, unique: false },
-            conditioning: { type: String, require: true, unique: false },
-            date: { type: Date, default: Date.now, required: true },
-            reps: { type: Number, require: false },
-            rounds: { type: Number, require: false },
-            weight: { type: Number, require: false },
-            distance: { type: String, require: false },
-            time: { type: String, require: false },
-        },
-    ],
+    session: [{ type: mongoose.Schema.Types.ObjectId, ref: "Session" }],
     date: { type: Date, default: Date.now, required: true },
 });
 userSchema.index({ username: "text" });

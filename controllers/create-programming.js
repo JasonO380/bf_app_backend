@@ -58,23 +58,25 @@ const createProgramming = async (req, res, next) => {
     let weekDays = [];
     let session = [];
     try {
-        weeks.map(async(week) => {
-            const days = new WeekDays(week); 
-            weekDays.push(days)
+        weeks.map(async (week) => {
+            const days = new WeekDays(week);
+            weekDays.push(days);
             days.programming = programming._id;
-            week.workouts.map(async(sess) => {
+            week.workouts.map(async (sess) => {
                 const activities = new Session(sess);
                 activities.programming = programming._id;
-                activities.weekDays = days._id
+                activities.weekDays = days._id;
                 session.push(activities);
-                days.session = activities._id
+                days.session = activities._id;
             });
         });
-        await Promise.all(weekDays.map(d => d.save()))
-        await Promise.all(session.map(s => s.save()));
-        programming.weeks = weekDays.map(weekday => weekday._id);
+        await Promise.all(weekDays.map((d) => d.save()));
+        await Promise.all(session.map((s) => s.save()));
+        programming.weeks = weekDays.map((weekday) => weekday._id);
     } catch (err) {
-        return next (new HttpError('Can not save session, try again later', 500))
+        return next(
+            new HttpError("Can not save session, try again later", 500)
+        );
     }
 
     try {

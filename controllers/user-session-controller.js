@@ -5,21 +5,11 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Movement = require("../models/movement");
 const User = require("../models/user");
-const { findOne } = require("../models/user");
-
+const Session = require("../models/session");
 
 const createUserSession = async (req, res, next) => {
-    const {
-        exercise,
-        conditioning,
-        weight,
-        reps,
-        rounds,
-        distance,
-        time,
-        athlete,
-    } = req.body;
-    const userID = req.body.athlete;
+    const { session, athlete } = req.body;
+    const userID = req.params.uid;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return next(
@@ -28,148 +18,114 @@ const createUserSession = async (req, res, next) => {
     }
 
     let movementExists;
+    let movement;
     try {
-        movementExists = await Movement.findOne({ movement: exercise });
+        for (let s of session) {
+            movementExists = await Movement.findOne({ movement: s.exercise });
+            if (!movementExists) {
+                movement = new Movement({ movement: s.exercise });
+                console.log(movement);
+                await movement.save();
+            }
+        }
     } catch (err) {
+        console.log(err);
         // return next(new HttpError("Failed to find movement", 500));
     }
 
-    let movement;
-    if (!movementExists) {
-        movement = new Movement({
-            movement: exercise,
-            date: new Date(),
-        });
-
-        try {
-            await movement.save();
-        } catch (err) {
-            return next(new HttpError("Failed to save movement", 402));
-        }
-    } else {
-        movement = movementExists;
-    }
-
-    sessionData = {
-        exercise,
-        conditioning,
-        weight,
-        reps,
-        rounds,
-        distance,
-        time,
-    };
-
+    let addUserSession;
+    let sessions = [];
+    let newSession;
     try {
-        await User.findByIdAndUpdate(
-            userID,
-            { $push: { session: { ...sessionData } } },
-            { new: true }
-        );
+        addUserSession = await User.findById(userID);
+        console.log(addUserSession);
+        for (let s of session) {
+            newSession = new Session({
+                exercise: s.exercise,
+                weight: s.weight,
+                reps: s.reps,
+                rounds: s.rounds,
+                distance: s.distance,
+                time: s.time,
+            });
+            sessions.push(newSession._id);
+            console.log(newSession);
+            await newSession.save();
+        }
+        addUserSession.session = sessions;
+        await addUserSession.save();
     } catch (err) {
-        return next(new HttpError("Failed to add session to user", 500));
+        return next(
+            new HttpError(
+                "Could not add client session please try again later",
+                500
+            )
+        );
     }
 
-    res.status(201).json({ message: "Session added to user." });
+    res.status(201).json({
+        userSession: addUserSession.toObject({ getters: true }),
+    });
 };
 
 const getUserSessions = async (req, res, next) => {
     const userID = req.params.uid;
     let userSessions;
     try {
-        userSessions = await User.find({ _id: userID }, 'session');
+        userSessions = await User.find({ _id: userID }, "session");
     } catch (err) {
-        return next(HttpError('Can not search for user right now try again later', 500))
+        return next(
+            HttpError("Can not search for user right now try again later", 500)
+        );
     }
-    res.status(200).json({message: userSessions.map((session)=> session.toObject({getters : true}))})
-}
+    res.status(200).json({
+        message: userSessions.map((session) =>
+            session.toObject({ getters: true })
+        ),
+    });
+};
 
-const updateUserSession = async (req, res, next) => {
-    const {
-        exercise,
-        conditioning,
-        weight,
-        rounds,
-        reps,
-        distance,
-        time,
-        athlete,
-    } = req.body;
-    const userID = req.body.athlete;
-    const sessionID = req.params.sid;
-    const updateData = {
-        exercise,
-        conditioning,
-        weight,
-        rounds,
-        reps,
-        distance,
-        time,
-    };
+const deleteUserSession = async (req, res, next) => {
+    const { session } = req.body;
+    const userID = req.params.uid;
 
+    let deleteSession;
     try {
-        const user = await User.findById(userID);
-        if (!user) {
-            return next(new HttpError("Could not find user for this id", 404));
-        }
-
-        const session = user.session.id(sessionID);
-        if (!session) {
-            return next(
-                new HttpError("Could not find session for this id", 404)
-            );
-        }
-
-        Object.assign(session, updateData);
-
-        await user.save();
-
-        res.status(200).json({ message: "Session updated.", session });
+        deleteSession = await Session.findByIdAndRemove(session);
+        await User.findByIdAndUpdate(userID, {
+            $pull: { session: session },
+        });
+        res.status(200).json({
+            message: "Successfully deleted user session",
+        });
     } catch (err) {
         return next(
             new HttpError(
-                "Could not update session, please try again later",
+                "Can not delete session right now try again later",
                 500
             )
         );
     }
-};
-
-const deleteUserSession = async (req, res, next) => {
-    const { athlete } = req.body;
-    const sessionID = req.params.sid;
-    let user;
-
-    try {
-        user = await User.findById(athlete)
-    } catch (err) {
-        return next(new HttpError('Can not find user please try again later', 500))
-    }
-
-    if (!user){
-        return next(new HttpError('User does not exist', 404))
-    }
-
-    let sessionToDelete;
-    try {
-        sessionToDelete = await User.findByIdAndUpdate(
-            athlete,
-            { $pull: { session: {_id: sessionID} } },
-            { new: true }
-        );
-    } catch (err) {
-        return next (new HttpError('Can not delete session right now try again later', 500))
-    }
-
-    if(!sessionToDelete){
-        return next(new HttpError('No session with this id exists', 422))
-    }
-    
 
     res.status(201).json({ message: "Session deleted from user." });
 };
 
 exports.createUserSession = createUserSession;
 exports.getUserSessions = getUserSessions;
-exports.updateUserSession = updateUserSession;
 exports.deleteUserSession = deleteUserSession;
+
+// {
+//     "session":[
+//         {
+//             "exercise":"Sled pull",
+//             "weight": 110,
+//             "rounds": 5,
+//             "reps": 2
+//         },
+//         {
+//             "exercise":"Seated box jumps",
+//             "distance": "24 inches",
+//             "reps": 3
+//         }
+//     ]
+// }

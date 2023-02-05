@@ -12,6 +12,4 @@ router.patch("/:sid", sessionControllers.updateSession);
 
 router.delete("/:sid", sessionControllers.deleteSession);
 
-
-
 module.exports = router;
