@@ -47,13 +47,17 @@ const createUserSession = async (req, res, next) => {
                 rounds: s.rounds,
                 distance: s.distance,
                 time: s.time,
+                athlete: s.athlete
             });
             sessions.push(newSession._id);
             console.log(newSession);
             await newSession.save();
         }
-        addUserSession.session = sessions;
-        await addUserSession.save();
+        await User.findByIdAndUpdate(userID, {
+            $push: { session: sessions },
+        });
+        // addUserSession.session = sessions;
+        // await addUserSession.save();
     } catch (err) {
         return next(
             new HttpError(
@@ -70,20 +74,35 @@ const createUserSession = async (req, res, next) => {
 
 const getUserSessions = async (req, res, next) => {
     const userID = req.params.uid;
-    let userSessions;
+    let user;
     try {
-        userSessions = await User.find({ _id: userID }, "session");
+        user = await User.findById(userID);
     } catch (err) {
         return next(
-            HttpError("Can not search for user right now try again later", 500)
+            new HttpError("Can not search for user right now, try again later", 500)
         );
     }
+
+    if (!user) {
+        return next(
+            new HttpError("Could not find user for the provided id", 404)
+        );
+    }
+
+    let sessions;
+    try {
+        sessions = await Session.find({ _id: { $in: user.session } });
+    } catch (err) {
+        return next(
+            new HttpError("Could not retrieve sessions for user", 500)
+        );
+    }
+
     res.status(200).json({
-        message: userSessions.map((session) =>
-            session.toObject({ getters: true })
-        ),
+        sessions: sessions.map((session) => session.toObject({ getters: true }))
     });
 };
+
 
 const deleteUserSession = async (req, res, next) => {
     const { session } = req.body;

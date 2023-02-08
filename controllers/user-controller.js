@@ -21,7 +21,7 @@ const createUser = async (req, res, next) => {
             "Password must be at least 6 characters, email must contain @, username must not be empty",
             422
         );
-        return next(error);
+        res.status(401).json({message: "Password must be at least 6 characters, email must contain @, username must not be empty"});;
     }
     //make sure mutliple email addresses can not be used
     let emailExists;
@@ -113,17 +113,17 @@ const searchUsers = async (req, res, next) => {
 };
 
 const loginUser = async (req, res, next) => {
-    const { userName, email, password } = req.body;
+    const { username, email, password } = req.body;
     let verifiedUser;
     try {
-        verifiedUser = await User.findOne({ userName: userName });
+        verifiedUser = await User.findOne({ username: username });
     } catch (err) {
         const error = new HttpError("user not found", 500);
         return next(error);
     }
 
     if (!verifiedUser) {
-        const error = new HttpError("Email not found", 401);
+        const error = new HttpError("User not found", 401);
         return next(error);
     }
 
@@ -142,7 +142,7 @@ const loginUser = async (req, res, next) => {
 
     let token;
     try {
-        token = jwt.sign({ userID: verifiedUser.id }, tokenSecret, {
+        token = jwt.sign({ userID: verifiedUser._id }, tokenSecret, {
             expiresIn: "24h",
         });
     } catch (err) {
@@ -150,7 +150,7 @@ const loginUser = async (req, res, next) => {
         return next(error);
     }
 
-    res.json({ message: "Success", userID: verifiedUser.id, token: token });
+    res.json({ message: "Success", userID: verifiedUser._id, token: token });
 };
 
 exports.createUser = createUser;

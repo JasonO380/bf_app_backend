@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get("/search/:query", userControllers.searchUsers);
 
-router.get("/session/:uid", sessionControllers.getUserSessions);
+router.get("/:uid", sessionControllers.getUserSessions);
 
 router.post(
     "/signup",
@@ -19,9 +19,9 @@ router.post(
     userControllers.createUser
 );
 
-router.post("/:uid", sessionControllers.createUserSession);
-
 router.post("/login", userControllers.loginUser);
+
+router.post("/:uid", sessionControllers.createUserSession);
 
 router.delete("/:uid", sessionControllers.deleteUserSession);
 

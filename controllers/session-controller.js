@@ -141,7 +141,6 @@ const updateSession = async (req, res, next) => {
         }
     } catch (err) {
         console.log(err);
-        // return next(new HttpError("Failed to find movement", 500));
     }
 
     let updateSession;
