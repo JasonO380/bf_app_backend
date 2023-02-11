@@ -129,7 +129,7 @@ const getSessionByID = async (req, res, next) => {
 
 const updateSession = async (req, res, next) => {
     const sessionID = req.params.sid;
-    const { exercise } = req.body;
+    const { exercise, weight, reps, rounds, distance, time } = req.body;
 
     let movementExists;
     let movement;
@@ -147,28 +147,32 @@ const updateSession = async (req, res, next) => {
     try {
         updateSession = await Session.findById(sessionID);
     } catch (err) {
-        return next(
-            new HttpError(
-                "Could not update session, please try again later",
-                500
-            )
-        );
+        console.log(err);
+        // return next(
+        //     new HttpError(
+        //         "Could not update session, please try again later",
+        //         500
+        //     )
+        // );
     }
 
     if (!updateSession) {
         return next(new HttpError("No session with that ID exists", 404));
     }
 
-    updateSession.exercise = req.body.exercise;
-    updateSession.cardio = req.body.cardio;
-    updateSession.distance = req.body.distance;
-    updateSession.time = req.body.time;
-    updateSession.weight = req.body.weight;
-    updateSession.rounds = req.body.rounds;
-    updateSession.reps = req.body.reps;
+    updateSession.exercise = exercise;
+    updateSession.distance = distance;
+    updateSession.time = time;
+    updateSession.weight = weight;
+    updateSession.rounds = rounds;
+    updateSession.reps = reps;
 
     try {
+        console.log(updateSession);
         await updateSession.save();
+        res.status(200).json({
+            session: updateSession.toObject({ getters: true }),
+        });
     } catch (err) {
         return next(
             new HttpError(
@@ -178,9 +182,9 @@ const updateSession = async (req, res, next) => {
         );
     }
 
-    res.status(200).json({
-        session: updateSession.toObject({ getters: true }),
-    });
+    // res.status(200).json({
+    //     session: updateSession.toObject({ getters: true }),
+    // });
 };
 
 const deleteSession = async (req, res, next) => {

@@ -8,7 +8,7 @@ const User = require("../models/user");
 const Session = require("../models/session");
 
 const createUserSession = async (req, res, next) => {
-    const { session, athlete } = req.body;
+    const { session } = req.body;
     const userID = req.params.uid;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -30,7 +30,6 @@ const createUserSession = async (req, res, next) => {
         }
     } catch (err) {
         console.log(err);
-        // return next(new HttpError("Failed to find movement", 500));
     }
 
     let addUserSession;
@@ -47,6 +46,10 @@ const createUserSession = async (req, res, next) => {
                 rounds: s.rounds,
                 distance: s.distance,
                 time: s.time,
+                year: s.year,
+                month: s.month,
+                dayOfMonth: s.dayOfMonth,
+                dayOfWeek: s.dayOfWeek,
                 athlete: s.athlete
             });
             sessions.push(newSession._id);
@@ -56,9 +59,9 @@ const createUserSession = async (req, res, next) => {
         await User.findByIdAndUpdate(userID, {
             $push: { session: sessions },
         });
-        // addUserSession.session = sessions;
-        // await addUserSession.save();
     } catch (err) {
+        console.log(newSession)
+        console.log(err)
         return next(
             new HttpError(
                 "Could not add client session please try again later",
@@ -77,6 +80,7 @@ const getUserSessions = async (req, res, next) => {
     let user;
     try {
         user = await User.findById(userID);
+        console.log(user)
     } catch (err) {
         return next(
             new HttpError("Can not search for user right now, try again later", 500)
@@ -92,15 +96,15 @@ const getUserSessions = async (req, res, next) => {
     let sessions;
     try {
         sessions = await Session.find({ _id: { $in: user.session } });
+        res.status(200).json({
+            sessions: sessions.map((session) => session.toObject({ getters: true }))
+        });
     } catch (err) {
         return next(
             new HttpError("Could not retrieve sessions for user", 500)
         );
     }
 
-    res.status(200).json({
-        sessions: sessions.map((session) => session.toObject({ getters: true }))
-    });
 };
 
 
@@ -125,8 +129,6 @@ const deleteUserSession = async (req, res, next) => {
             )
         );
     }
-
-    res.status(201).json({ message: "Session deleted from user." });
 };
 
 exports.createUserSession = createUserSession;
