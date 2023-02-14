@@ -6,6 +6,10 @@ const router = express.Router();
 
 router.get("/search/:query", trainerControllers.searchCoaches);
 
+router.get("/client/:cid", trainerControllers.getCoachClients);
+
+router.get("/:cid", trainerControllers.getCoach);
+
 router.post(
     "/signup",
     [
@@ -16,6 +20,8 @@ router.post(
     trainerControllers.createCoach
 );
 
-router.post("logincoach", trainerControllers.loginCoach);
+router.post("/")
+
+router.post("/login", trainerControllers.loginCoach);
 
 module.exports = router;

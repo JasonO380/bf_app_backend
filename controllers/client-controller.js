@@ -6,6 +6,7 @@ const Coach = require("../models/coach");
 const Session = require("../models/session");
 
 const addClient = async (req, res, next) => {
+    const coachID = req.params.cid;
     const { clientName, coach } = req.body;
     const errors = validationResult(req);
     //check to see if errors is not empty if there are errors throw new HttpError
@@ -31,9 +32,12 @@ const addClient = async (req, res, next) => {
     } else {
         newClient = new Client({ clientName });
         await newClient.save();
+        await Client.findByIdAndUpdate(newClient._id, {
+            $push: {coach: coachID}
+        });
     }
     try {
-        await Coach.findByIdAndUpdate(coach, {
+        await Coach.findByIdAndUpdate(coachID, {
             $push: { client: newClient._id },
         });
     } catch (err) {
@@ -49,16 +53,6 @@ const addClientSession = async (req, res, next) => {
     const { clientName, coach, session } = req.body;
     console.log(session);
     const clientID = req.params.cid;
-    const errors = validationResult(req);
-    //check to see if errors is not empty if there are errors throw new HttpError
-    if (!errors.isEmpty()) {
-        console.log(errors);
-        const error = new HttpError(
-            "Password must be at least 6 characters, email must contain @, coach name must not be empty",
-            422
-        );
-        return next(error);
-    }
 
     let addClientSession;
     let sessions = [];
@@ -86,6 +80,28 @@ const addClientSession = async (req, res, next) => {
         clientSession: addClientSession.toObject({ getters: true }),
     });
 };
+
+const getClientSessions = async (req, res, next) => {
+    const clientID = req.params.cid;
+    let client;
+    let sessions;
+    try {
+        client = await Client.findById(clientID)
+        sessions= await Session.find({ _id: { $in: client.session } });
+        res.status(200).json({
+            sessions: sessions.map((session) => session.toObject({ getters: true }))
+        }); 
+    } catch (err) {
+        return next(new HttpError('Error finding client', 500))
+    }
+
+    if(!client){
+        return next(new HttpError("Client does not exist", 500))
+    }
+
+
+
+}
 
 const deleteClientSession = async (req, res, next) => {
     const { clientName, coach, session } = req.body;
@@ -122,6 +138,7 @@ const deleteClientSession = async (req, res, next) => {
 
 exports.addClient = addClient;
 exports.addClientSession = addClientSession;
+exports.getClientSessions = getClientSessions;
 exports.deleteClientSession = deleteClientSession;
 
 // {

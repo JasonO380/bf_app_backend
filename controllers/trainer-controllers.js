@@ -4,6 +4,7 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Coach = require("../models/coach");
+const Client = require("../models/client");
 
 let tokenSecret = "myapprules";
 
@@ -90,6 +91,58 @@ const createCoach = async (req, res, next) => {
     });
 };
 
+const getCoach = async (req, res, next) => {
+    const coachID = req.params.cid;
+    if (!mongoose.Types.ObjectId.isValid(coachID)) {
+        return next(new HttpError("Invalid coach ID", 400));
+    }
+    let foundCoach;
+    try {
+        // foundCoach = await Coach.findOne({coachName: coachID})
+        foundCoach = await Coach.findOne({_id: coachID});
+        // res.json({coach: foundCoach.map((coach)=> coach.toObject({getters: true}))})
+        if(!foundCoach){
+            return next(new HttpError("Coach not found", 404));
+        } else {
+            res.json({coach: foundCoach.toObject({getters: true})})
+        }
+    } catch (err) {
+        console.log(err)
+        // return next (new HttpError("Can not find coach, please try again later", 500))
+    }
+};
+
+const getCoachClients = async (req, res, next) => {
+    const coachID = req.params.cid;
+    let coach;
+    try {
+        coach = await Coach.findById(coachID);
+    } catch (err) {
+        return next(
+            new HttpError("Can not search for coach right now, try again later", 500)
+        );
+    }
+
+    if (!coach) {
+        return next(
+            new HttpError("Could not find coach for the provided id", 404)
+        );
+    }
+
+    let client;
+    try {
+        client = await Client.find({ _id: { $in: coach.client } });
+        console.log(client);
+        res.status(200).json({
+            clients: client.map((c) => c.toObject({ getters: true }))
+        });
+    } catch (err) {
+        return next(
+            new HttpError("Could not retrieve clients for coach", 500)
+        );
+    }
+};
+
 const searchCoaches = async (req, res, next) => {
     const searchQuery = req.params.query;
     let foundCoach;
@@ -108,15 +161,15 @@ const searchCoaches = async (req, res, next) => {
     }
 
     res.json({
-        users: foundCoach.map((coach) => coach.toObject({ getters: true })),
+        coaches: foundCoach.map((coach) => coach.toObject({ getters: true })),
     });
 };
 
 const loginCoach = async (req, res, next) => {
-    const { email, coachName, password } = req.body;
+    const { email, coachname, password } = req.body;
     let verifiedCoach;
     try {
-        verifiedCoach = await Coach.findOne(coachName);
+        verifiedCoach = await Coach.findOne({coachname:coachname});
     } catch (err) {
         const error = new HttpError(
             "Error with finding coach please try again later",
@@ -133,7 +186,7 @@ const loginCoach = async (req, res, next) => {
     let token;
     try {
         token =
-            ({ coachID: verifiedCoach.id }, tokenSecret, { expiresIn: "24h" });
+            jwt.sign({ userID: verifiedCoach.id }, tokenSecret, { expiresIn: "24h" });
     } catch (err) {
         const error = new HttpError("Error in JWT code block");
         return next(error);
@@ -143,11 +196,14 @@ const loginCoach = async (req, res, next) => {
         message: "Coach login successful",
         coachID: verifiedCoach.id,
         token: token,
+        name:verifiedCoach.coachname
     });
 };
 
+//DO NOT THINK I NEED THIS FUNCTION
 const addClient = async (req, res, next) => {
-    const { coachName, client } = req.body;
+    const { client } = req.body;
+    const coachID = req.params.cid;
     const errors = validationResult(req);
     //check to see if errors is not empty if there are errors throw new HttpError
     if (!errors.isEmpty()) {
@@ -158,8 +214,19 @@ const addClient = async (req, res, next) => {
         );
         return next(error);
     }
+
+    let coach
+    try {
+        coach = await Coach.findOne({coachName:coachID});
+    } catch (err) {
+        return next(new HttpError("No coach exists with that ID", 500))
+    }
+
 };
 
 exports.createCoach = createCoach;
+exports.getCoachClients = getCoachClients;
+exports.getCoach = getCoach;
 exports.searchCoaches = searchCoaches;
 exports.loginCoach = loginCoach;
+exports.addClient = addClient;

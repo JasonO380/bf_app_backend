@@ -4,9 +4,11 @@ const { check } = require("express-validator");
 // const checkAuth = require('../middleware/check-auth');
 const router = express.Router();
 
-router.post("/", clientControllers.addClient);
+router.post("/sesson/:cid", clientControllers.addClientSession);
 
-router.post("/:cid", clientControllers.addClientSession);
+router.post("/:cid", clientControllers.addClient);
+
+router.get("/:cid", clientControllers.getClientSessions);
 
 router.delete("/:sid", clientControllers.deleteClientSession);
 
