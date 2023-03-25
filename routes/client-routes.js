@@ -4,7 +4,7 @@ const { check } = require("express-validator");
 // const checkAuth = require('../middleware/check-auth');
 const router = express.Router();
 
-router.post("/sesson/:cid", clientControllers.addClientSession);
+router.post("/session/:cid", clientControllers.addClientSession);
 
 router.post("/:cid", clientControllers.addClient);
 

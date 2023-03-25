@@ -169,7 +169,7 @@ const loginCoach = async (req, res, next) => {
     const { email, coachname, password } = req.body;
     let verifiedCoach;
     try {
-        verifiedCoach = await Coach.findOne({coachname:coachname});
+        verifiedCoach = await Coach.findOne({ coachname:coachname });
     } catch (err) {
         const error = new HttpError(
             "Error with finding coach please try again later",
@@ -186,7 +186,7 @@ const loginCoach = async (req, res, next) => {
     let token;
     try {
         token =
-            jwt.sign({ userID: verifiedCoach.id }, tokenSecret, { expiresIn: "24h" });
+            jwt.sign({ userID: verifiedCoach._id }, tokenSecret, { expiresIn: "24h" });
     } catch (err) {
         const error = new HttpError("Error in JWT code block");
         return next(error);
@@ -194,9 +194,9 @@ const loginCoach = async (req, res, next) => {
 
     res.json({
         message: "Coach login successful",
-        coachID: verifiedCoach.id,
+        userID: verifiedCoach._id,
         token: token,
-        name:verifiedCoach.coachname
+        name:verifiedCoach.coachName
     });
 };
 

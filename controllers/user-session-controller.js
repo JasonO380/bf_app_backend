@@ -135,18 +135,3 @@ exports.createUserSession = createUserSession;
 exports.getUserSessions = getUserSessions;
 exports.deleteUserSession = deleteUserSession;
 
-// {
-//     "session":[
-//         {
-//             "exercise":"Sled pull",
-//             "weight": 110,
-//             "rounds": 5,
-//             "reps": 2
-//         },
-//         {
-//             "exercise":"Seated box jumps",
-//             "distance": "24 inches",
-//             "reps": 3
-//         }
-//     ]
-// }

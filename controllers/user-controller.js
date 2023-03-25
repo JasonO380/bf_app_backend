@@ -150,7 +150,7 @@ const loginUser = async (req, res, next) => {
         return next(error);
     }
 
-    res.json({ message: "Success", userID: verifiedUser._id, token: token });
+    res.json({ message: "Success", userID: verifiedUser._id, token: token, userName: verifiedUser.username });
 };
 
 exports.createUser = createUser;

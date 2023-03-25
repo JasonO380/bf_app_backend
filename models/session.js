@@ -3,11 +3,11 @@ const Schema = mongoose.Schema;
 const date = new Date ()
 
 const sessionSchema = new Schema({
-    exercise: { type: String, require: true, unique: true },
+    exercise: { type: String, required: true },
     date: { type: Date, default: (new Date()).toDateString(), required: true },
-    reps: { type: Number, require: false },
-    rounds: { type: Number, require: false },
-    weight: { type: Number, require: false },
+    reps: { type: Number, required: false },
+    rounds: { type: Number, required: false },
+    weight: { type: Number, required: false },
     distance: { type: String, require: false },
     time: { type: String, require: false },
     year: { type: Number, required: false },
