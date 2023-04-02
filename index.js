@@ -9,6 +9,7 @@ const userRoutes = require("./routes/user-routes");
 const programmingRoutes = require("./routes/programming-routes");
 const coachRoutes = require("./routes/trainer-routes");
 const sessionRoutes = require("./routes/session-routes");
+const macrosRoutes = require("./routes/macros-routes");
 const weekDayRoutes = require("./routes/week-day-routes");
 const clientRoutes = require("./routes/client-routes");
 const Cardio = require("./models/cardio");
@@ -28,6 +29,8 @@ app.use("/api/users", userRoutes);
 app.use("/api/coach", coachRoutes);
 
 app.use("/api/session", sessionRoutes);
+
+app.use("/api/macros", macrosRoutes);
 
 app.use("/api/workouts", workoutRoutes);
 

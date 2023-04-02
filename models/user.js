@@ -8,6 +8,7 @@ const userSchema = new Schema({
     programming: [{ type: mongoose.Schema.Types.ObjectId, ref: "Programming" }],
     trainer: [{ type: mongoose.Schema.Types.ObjectId, ref: "Coach" }],
     session: [{ type: mongoose.Schema.Types.ObjectId, ref: "Session" }],
+    macros: [{ type: mongoose.Schema.Types.ObjectId, ref: "Macros" }],
     date: { type: Date, default: Date.now, required: true },
 });
 userSchema.index({ username: "text" });
