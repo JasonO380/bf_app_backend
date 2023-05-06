@@ -6,6 +6,7 @@ const axios = require("axios");
 const workoutRoutes = require("./routes/movement-routes");
 const cardioRoutes = require("./routes/cardio-routes");
 const userRoutes = require("./routes/user-routes");
+const movementRoutes = require("./routes/movement-routes");
 const programmingRoutes = require("./routes/programming-routes");
 const coachRoutes = require("./routes/trainer-routes");
 const sessionRoutes = require("./routes/session-routes");
@@ -31,6 +32,8 @@ app.use("/api/coach", coachRoutes);
 app.use("/api/session", sessionRoutes);
 
 app.use("/api/macros", macrosRoutes);
+
+app.use("/api/movement", movementRoutes);
 
 app.use("/api/workouts", workoutRoutes);
 

@@ -68,12 +68,12 @@ const getMovementById = async (req, res, next) => {
 };
 
 const searchMovements = async (req, res, next) => {
-    const searchQuery = req.query.query;
-
+    const searchQuery = req.params.query;
+    
     let movements;
     try {
         movements = await Exercise.find({
-            type: { $regex: "^" + searchQuery, $options: "i" },
+            movement: { $regex: searchQuery, $options: "i" },
         });
     } catch (err) {
         return next(

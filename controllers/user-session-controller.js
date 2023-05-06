@@ -72,6 +72,7 @@ const createUserSession = async (req, res, next) => {
 
     res.status(201).json({
         userSession: addUserSession.toObject({ getters: true }),
+        sessionID: sessions
     });
 };
 

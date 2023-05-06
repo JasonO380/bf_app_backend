@@ -8,4 +8,6 @@ router.get("/:uid", macroControllers.getMacros);
 
 router.post("/:uid", macroControllers.addMacros);
 
+router.patch("/:mid", macroControllers.editMacros);
+
 module.exports = router;

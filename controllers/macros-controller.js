@@ -83,11 +83,41 @@ const getMacros = async (req, res, next) => {
     }
 }
 
-const editMacros = (req, res, next) => {
+const editMacros = async (req, res, next) => {
+    const macroID = req.params.mid;
+    const { protein, carbs, fats } = req.body;
+    let updateMacros;
+    try {
+        updateMacros = await Macros.findById(macroID);
+    } catch (err) {
+        console.log(err);
+    }
 
+    if (!updateMacros) {
+        return next(new HttpError("No macros with that ID exists", 404));
+    }
+
+    updateMacros.protein = protein;
+    updateMacros.carbs = carbs;
+    updateMacros.fats = fats;
+
+    try {
+        console.log(updateMacros);
+        await updateMacros.save();
+        res.status(200).json({
+            macros: updateMacros.toObject({ getters: true }),
+        });
+    } catch (err) {
+        return next(
+            new HttpError(
+                "Could not update macros, please try again later",
+                500
+            )
+        );
+    }
 }
 
-const deleteMacros = (req, res, next) => {
+const deleteMacros = async (req, res, next) => {
 
 }
 

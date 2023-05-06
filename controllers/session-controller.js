@@ -148,12 +148,6 @@ const updateSession = async (req, res, next) => {
         updateSession = await Session.findById(sessionID);
     } catch (err) {
         console.log(err);
-        // return next(
-        //     new HttpError(
-        //         "Could not update session, please try again later",
-        //         500
-        //     )
-        // );
     }
 
     if (!updateSession) {
