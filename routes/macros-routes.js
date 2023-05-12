@@ -10,4 +10,6 @@ router.post("/:uid", macroControllers.addMacros);
 
 router.patch("/:mid", macroControllers.editMacros);
 
+router.delete("/:mid", macroControllers.deleteMacros);
+
 module.exports = router;

@@ -118,7 +118,24 @@ const editMacros = async (req, res, next) => {
 }
 
 const deleteMacros = async (req, res, next) => {
+    const macroID = req.params.mid;
+    let deleteMacros;
+    try {
+        deleteMacros = await Macros.findByIdAndRemove(macroID);
+    } catch (err) {
+        return next(
+            new HttpError(
+                "Could not delete macros, please try again later",
+                500
+            )
+        );
+    }
 
+    if (!deleteMacros) {
+        return next(new HttpError("Could not find macros for this id", 404));
+    }
+
+    res.status(200).json({ message: "Macros deleted." });
 }
 
 exports.addMacros = addMacros;

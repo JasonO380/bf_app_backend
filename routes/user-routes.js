@@ -7,6 +7,8 @@ const router = express.Router();
 
 router.get("/search/:query", userControllers.searchUsers);
 
+router.get("/find/:username", userControllers.checkUsername);
+
 router.get("/:uid", sessionControllers.getUserSessions);
 
 router.post(

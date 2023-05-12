@@ -99,7 +99,7 @@ const searchUsers = async (req, res, next) => {
 
     try {
         foundUser = await User.find({
-            type: { $regex: "^" + searchQuery, $options: "i" },
+            username: { $regex: "^" + searchQuery, $options: "i" },
         });
     } catch (err) {
         return next(
@@ -110,6 +110,25 @@ const searchUsers = async (req, res, next) => {
     res.json({
         users: foundUser.map((user) => user.toObject({ getters: true })),
     });
+};
+
+const checkUsername = async (req, res, next) => {
+    const { username } = req.params;
+    console.log(username);
+    let existingUser;
+
+    try {
+        existingUser = await User.findOne({ username: new RegExp(`^${username}$`, 'i') });
+    } catch (err) {
+        const error = new HttpError("Error when checking username", 500);
+        return next(error);
+    }
+
+    if (existingUser) {
+        return res.status(400).json({ message: "Username is already taken" });
+    }
+
+    return res.status(200).json({ message: "Username is available" });
 };
 
 const loginUser = async (req, res, next) => {
@@ -155,4 +174,5 @@ const loginUser = async (req, res, next) => {
 
 exports.createUser = createUser;
 exports.searchUsers = searchUsers;
+exports.checkUsername = checkUsername;
 exports.loginUser = loginUser;
