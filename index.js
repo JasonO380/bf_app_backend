@@ -45,6 +45,11 @@ app.use("/api/week", weekDayRoutes);
 
 app.use("/api/client", clientRoutes);
 
+app.use((err, req, res, next) => {
+    console.error(err);
+    res.status(500).json({message: err.message});
+});
+
 const mongo =
     "mongodb+srv://JMO380:nosaj380!@barbellapp.wp1vz99.mongodb.net/?retryWrites=true&w=majority";
 

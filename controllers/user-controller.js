@@ -17,11 +17,12 @@ const createUser = async (req, res, next) => {
     //check to see if errors is not empty if there are errors throw new HttpError
     if (!errors.isEmpty()) {
         console.log(errors);
-        const error = new HttpError(
-            "Password must be at least 6 characters, email must contain @, username must not be empty",
-            422
-        );
-        res.status(401).json({message: "Password must be at least 6 characters, email must contain @, username must not be empty"});;
+        let errorMessages = errors
+            .array()
+            .map((error) => `${error.param}: ${error.msg}`);
+        let errorMessage = errorMessages.join(", ");
+        const error = new HttpError(errorMessage, 422);
+        return next(error);
     }
     //make sure mutliple email addresses can not be used
     let emailExists;
@@ -87,7 +88,7 @@ const createUser = async (req, res, next) => {
     }
     res.status(201).json({
         message: "Success",
-        userName: newUser.username,
+        username: newUser.username,
         userID: newUser.id,
         token: token,
     });
@@ -118,7 +119,9 @@ const checkUsername = async (req, res, next) => {
     let existingUser;
 
     try {
-        existingUser = await User.findOne({ username: new RegExp(`^${username}$`, 'i') });
+        existingUser = await User.findOne({
+            username: new RegExp(`^${username}$`, "i"),
+        });
     } catch (err) {
         const error = new HttpError("Error when checking username", 500);
         return next(error);
@@ -169,7 +172,12 @@ const loginUser = async (req, res, next) => {
         return next(error);
     }
 
-    res.json({ message: "Success", userID: verifiedUser._id, token: token, userName: verifiedUser.username });
+    res.json({
+        message: "Success",
+        userID: verifiedUser._id,
+        token: token,
+        userName: verifiedUser.username,
+    });
 };
 
 exports.createUser = createUser;
