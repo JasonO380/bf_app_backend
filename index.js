@@ -52,9 +52,6 @@ app.use((err, req, res, next) => {
     res.status(500).json({message: err.message});
 });
 
-const mongo =
-    "mongodb+srv://JMO380:nosaj380!@barbellapp.wp1vz99.mongodb.net/?retryWrites=true&w=majority";
-
 mongoose
     .connect(URL, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
