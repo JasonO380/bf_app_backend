@@ -9,6 +9,6 @@ const coachSchema = new Schema({
     athlete: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     client: [{ type: mongoose.Schema.Types.ObjectId, ref: "Client" }],
 });
-coachSchema.index({ coachName: "text" });
+coachSchema.index({ coachname: "text" });
 
 module.exports = mongoose.model("Coach", coachSchema);

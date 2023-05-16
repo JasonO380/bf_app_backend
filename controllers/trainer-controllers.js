@@ -169,7 +169,7 @@ const loginCoach = async (req, res, next) => {
     const { email, coachname, password } = req.body;
     let verifiedCoach;
     try {
-        verifiedCoach = await Coach.findOne({ coachname:coachname });
+        verifiedCoach = await Coach.findOne({ coachName:coachname });
     } catch (err) {
         const error = new HttpError(
             "Error with finding coach please try again later",
@@ -180,6 +180,19 @@ const loginCoach = async (req, res, next) => {
 
     if (!verifiedCoach) {
         const error = new HttpError("Coach name does not exist", 401);
+        return next(error);
+    }
+
+    let passwordIsValid;
+    try {
+        passwordIsValid = await bcrypt.compare(password, verifiedCoach.password);
+    } catch (err) {
+        const error = new HttpError("Login logic with bcrypt error", 500);
+        return next(error);
+    }
+
+    if (!passwordIsValid) {
+        const error = new HttpError("Email and password do not match", 401);
         return next(error);
     }
 
@@ -196,7 +209,7 @@ const loginCoach = async (req, res, next) => {
         message: "Coach login successful",
         userID: verifiedCoach._id,
         token: token,
-        name:verifiedCoach.coachName
+        coachname:verifiedCoach.coachname
     });
 };
 
