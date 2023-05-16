@@ -9,7 +9,7 @@ const Session = require("../models/session");
 const User = require("../models/user");
 const { findOne } = require("../models/user");
 
-let tokenSecret = "myapprules";
+let tokenSecret = process.env.TOKEN;
 
 const createUser = async (req, res, next) => {
     const { username, email, password } = req.body;
