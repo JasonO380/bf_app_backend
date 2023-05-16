@@ -2,8 +2,6 @@ const HttpError = require("../models/http-error");
 const mongoose = require("mongoose");
 const { validationResult } = require("express-validator");
 const Exercise = require("../models/movement");
-//add User schema to link users to workouts
-// const User = require('../models/users');
 const dateEntry = new Date();
 
 const addMovement = async (req, res, next) => {
