@@ -3,7 +3,7 @@ const bodyparser = require("body-parser");
 const app = express();
 const mongoose = require("mongoose");
 require('dotenv').config();
-// let URL = process.env.URL
+let URL = process.env.URL
 const axios = require("axios");
 const workoutRoutes = require("./routes/movement-routes");
 const cardioRoutes = require("./routes/cardio-routes");
@@ -53,7 +53,7 @@ app.use((err, req, res, next) => {
 });
 
 mongoose
-    .connect(process.env.URL, { useNewUrlParser: true, useUnifiedTopology: true })
+    .connect(URL, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         console.log("Connected to MongoDB");
     })
