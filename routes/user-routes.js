@@ -5,6 +5,8 @@ const { check } = require("express-validator");
 // const checkAuth = require('../middleware/check-auth');
 const router = express.Router();
 
+router.get("/allusers", userControllers.getAllUsers);
+
 router.get("/search/:query", userControllers.searchUsers);
 
 router.get("/find/:username", userControllers.checkUsername);

@@ -94,6 +94,22 @@ const createUser = async (req, res, next) => {
     });
 };
 
+const getAllUsers = async (req, res, next) => {
+    let allUsers;
+
+    try {
+        allUsers = await User.find({});
+    } catch (err) {
+        return res.status(500).json({
+            message: "Could not perform search. Please try again later.",
+        });
+    }
+
+    res.status(200).json({
+        users: allUsers.map((user) => user.toObject({ getters: true })),
+    });
+};
+
 const searchUsers = async (req, res, next) => {
     const searchQuery = req.params.query;
     let foundUser;
@@ -181,6 +197,7 @@ const loginUser = async (req, res, next) => {
 };
 
 exports.createUser = createUser;
+exports.getAllUsers = getAllUsers;
 exports.searchUsers = searchUsers;
 exports.checkUsername = checkUsername;
 exports.loginUser = loginUser;
