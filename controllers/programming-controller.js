@@ -117,6 +117,7 @@ const updateProgramming = async (req, res, next) => {
     }
     //update program fields
     program.cycleName = req.body.cycleName;
+    program.cycleAPI = req.body.cycleAPI;
     program.athlete = req.body.athlete;
 
     try {

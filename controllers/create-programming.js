@@ -111,4 +111,59 @@ const createProgramming = async (req, res, next) => {
     });
 };
 
+const addGoogleSheets = async ( req, res, next ) => {
+    const { cycleName, cycleAPI, athlete } = req.body;
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return next(
+            new HttpError("Invalid inputs passed, please check your data.", 422)
+        );
+    }
+
+    let doesProgrammingExist;
+    try {
+        doesProgrammingExist = await Programming.findOne({
+            cycleName: cycleName,
+        });
+    } catch (err) {
+        return next(
+            new HttpError(
+                "Can not create programming. Please try again later",
+                500
+            )
+        );
+    };
+
+    if (doesProgrammingExist) {
+        return next(new HttpError("Program already exists", 402));
+    };
+
+    const programming = new Programming({
+        cycleName,
+        cycleAPI,
+        athlete,
+    });
+
+    try {
+        await programming.save();
+    } catch (err) {
+        console.log(err);
+        return next(new HttpError("Failed to add program", 500));
+    };
+
+    try {
+        await User.findByIdAndUpdate(athlete, {
+            $push: {
+                programming: programming._id,
+            },
+        });
+    } catch (err) {
+        return next(new HttpError("No user found please try again later", 500));
+    }
+
+
+}
+
 exports.createProgramming = createProgramming;
+exports.addGoogleSheets = addGoogleSheets;
