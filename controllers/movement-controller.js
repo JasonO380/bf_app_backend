@@ -1,7 +1,7 @@
 const HttpError = require("../models/http-error");
 const mongoose = require("mongoose");
 const { validationResult } = require("express-validator");
-const Exercise = require("../models/movement");
+const Movement = require("../models/movement");
 const dateEntry = new Date();
 
 const addMovement = async (req, res, next) => {
@@ -12,12 +12,12 @@ const addMovement = async (req, res, next) => {
         );
     }
 
-    const { movement, timeOfDayStarted, timeOfDayFinished } = req.body;
+    const { movement } = req.body;
 
     let existingMovement;
 
     try {
-        existingMovement = await Exercise.findOne({ movement });
+        existingMovement = await Movement.findOne({ movement });
     } catch (err) {
         return next(
             new HttpError("Failed to check for existing movement", 500)
@@ -28,10 +28,8 @@ const addMovement = async (req, res, next) => {
         return res.status(200).json({ message: "Movement already exists" });
     }
 
-    const exercise = new Exercise({
+    const newMovement = new Movement({
         movement,
-        timeOfDayStarted,
-        timeOfDayFinished,
     });
 
     try {
@@ -42,7 +40,7 @@ const addMovement = async (req, res, next) => {
             new HttpError("Failed to add workout to the database", 500)
         );
     }
-    res.status(201).json({ movement: exercise.toObject({ getters: true }) });
+    res.status(201).json({ movement: newMovement.toObject({ getters: true }) });
 };
 
 const getMovementById = async (req, res, next) => {
@@ -65,12 +63,27 @@ const getMovementById = async (req, res, next) => {
     res.json({ movement: movement.toObject({ getters: true }) });
 };
 
+const getAllMovements = async (req, res, next) => {
+    let allMovements;
+    try {
+        allMovements = await Movement.find({})
+    } catch(err) {
+        return res.status(500).json({
+            message: "Could not perform search. Please try again later.",
+        });
+    }
+
+    res.json({
+        movements: allMovements.map((m) => m.toObject({ getters: true })),
+    }); 
+}
+
 const searchMovements = async (req, res, next) => {
     const searchQuery = req.params.query;
     
     let movements;
     try {
-        movements = await Exercise.find({
+        movements = await Movement.find({
             movement: { $regex: searchQuery, $options: "i" },
         });
     } catch (err) {
@@ -106,7 +119,7 @@ const updateMovement = async (req, res, next) => {
     const movementID = req.params.mid;
     let movement;
     try {
-        movement = await Exercise.findById(movementID);
+        movement = await Movement.findById(movementID);
     } catch (err) {
         return next(
             new HttpError(
@@ -139,7 +152,7 @@ const deleteMovement = async (req, res, next) => {
     const movementID = req.params.mid;
     let movement;
     try {
-        movement = await Exercise.findByIdAndRemove(movementID);
+        movement = await Movement.findByIdAndRemove(movementID);
     } catch (err) {
         return next(
             new HttpError(
@@ -158,6 +171,7 @@ const deleteMovement = async (req, res, next) => {
 
 exports.addMovement = addMovement;
 exports.getMovementById = getMovementById;
+exports.getAllMovements = getAllMovements;
 exports.searchMovements = searchMovements;
 exports.updateMovement = updateMovement;
 exports.deleteMovement = deleteMovement;
