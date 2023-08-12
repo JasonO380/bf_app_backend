@@ -100,13 +100,13 @@ const getUserSessions = async (req, res, next) => {
     }
 
     let sessions;
+    let dayObjectSessions;
+
     try {
         sessions = await Session.find({ _id: { $in: user.session } });
-        // res.status(200).json({
-        //     sessions: sessions.map((session) => session.toObject({ getters: true }))
-        // });
+        dayObjectSessions = createDayObjectSession(sessions)
         res.status(200).json({
-            sessions: createDaySessionObjects(sessions),
+            sessions: dayObjectSessions,
         });
     } catch (err) {
         return next(new HttpError("Could not retrieve sessions for user", 500));
