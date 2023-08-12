@@ -11,6 +11,8 @@ router.get("/search/:query", userControllers.searchUsers);
 
 router.get("/find/:username", userControllers.checkUsername);
 
+router.get("/usersworkoutsweekly/:uid", sessionControllers.getUserSessionsInWeeklyFormat)
+
 router.get("/:uid", sessionControllers.getUserSessions);
 
 router.post(

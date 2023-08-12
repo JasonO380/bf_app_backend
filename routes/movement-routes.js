@@ -4,6 +4,8 @@ const { check } = require("express-validator");
 // const checkAuth = require('../middleware/check-auth');
 const router = express.Router();
 
+router.get("/", movementControllers.getAllMovements)
+
 router.get("/search/:query", movementControllers.searchMovements);
 
 router.get("/:mid", movementControllers.getMovementById);
@@ -20,6 +22,6 @@ router.patch(
     movementControllers.updateMovement
 );
 
-router.delete("/:wid", movementControllers.deleteMovement);
+router.delete("/:mid", movementControllers.deleteMovement);
 
 module.exports = router;

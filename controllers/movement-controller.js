@@ -33,7 +33,7 @@ const addMovement = async (req, res, next) => {
     });
 
     try {
-        await exercise.save();
+        await newMovement.save();
     } catch (err) {
         console.log(err);
         return next(
@@ -66,21 +66,28 @@ const getMovementById = async (req, res, next) => {
 const getAllMovements = async (req, res, next) => {
     let allMovements;
     try {
-        allMovements = await Movement.find({})
-    } catch(err) {
+        allMovements = await Movement.find({});
+    } catch (err) {
         return res.status(500).json({
             message: "Could not perform search. Please try again later.",
         });
     }
+    const sortedMovements = allMovements.sort((a, b) => {
+        const nameA = a.movement || ""; 
+        const nameB = b.movement || ""; 
+        return nameA.localeCompare(nameB);
+    });
 
     res.json({
-        movements: allMovements.map((m) => m.toObject({ getters: true })),
-    }); 
-}
+        movements: sortedMovements.map((m) =>
+            m.toObject({ getters: true })
+        ),
+    });
+};
 
 const searchMovements = async (req, res, next) => {
     const searchQuery = req.params.query;
-    
+
     let movements;
     try {
         movements = await Movement.find({
@@ -150,6 +157,7 @@ const updateMovement = async (req, res, next) => {
 
 const deleteMovement = async (req, res, next) => {
     const movementID = req.params.mid;
+    console.log(movementID)
     let movement;
     try {
         movement = await Movement.findByIdAndRemove(movementID);
