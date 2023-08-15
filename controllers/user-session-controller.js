@@ -104,6 +104,7 @@ const getUserSessions = async (req, res, next) => {
 
     try {
         sessions = await Session.find({ _id: { $in: user.session } });
+        sessions.reverse(); //for data consistency reverse the sessions here we are always going to view the sessions from the most recent addition down
         dayObjectSessions = createDayObjectSession(sessions)
         res.status(200).json({
             sessions: dayObjectSessions,
