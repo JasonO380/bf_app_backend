@@ -9,6 +9,7 @@ const createDayObjectSession = (session) => {
         weight: session.weight,
         distance: session.distance,
         time: session.time,
+        date: session.date,
     });
     // Helper function to find or create a year object
     const findOrCreateYear = (year) => {
@@ -33,10 +34,10 @@ const createDayObjectSession = (session) => {
     };
 
     // Helper function to find or create a day object
-    const findOrCreateDay = (monthObj, day, dayOfWeek) => {
+    const findOrCreateDay = (monthObj, day, dayOfWeek, date) => {
         let dayObj = monthObj.days.find((dayObj) => dayObj.day === day);
         if (!dayObj) {
-            dayObj = { day, dayOfWeek, sessions: [] };
+            dayObj = { day, dayOfWeek, date, sessions: [] };
             monthObj.days.push(dayObj);
         }
         return dayObj;
@@ -48,7 +49,7 @@ const createDayObjectSession = (session) => {
     sessionsAsObjects.forEach((sess) => {
         const yearObj = findOrCreateYear(sess.year);
         const monthObj = findOrCreateMonth(yearObj, sess.month);
-        const dayObj = findOrCreateDay(monthObj, sess.dayOfMonth, sess.dayOfWeek);
+        const dayObj = findOrCreateDay(monthObj, sess.dayOfMonth, sess.dayOfWeek, sess.date);
         dayObj.sessions.push(generateMovementObjects(sess));
     });
 
